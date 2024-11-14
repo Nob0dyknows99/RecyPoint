@@ -1,58 +1,51 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import Header from '../components/Header';
 
-export default function AboutScreen() {
+const AboutScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>RecyPoint</Text>
-      <Text style={styles.subheader}>¡Bienvenido!</Text>
-      <View style={styles.descriptionContainer}>
-        <Text style={styles.description}>
-          ¡Bienvenido a RecyPoint! Tu aliado para encontrar puntos de reciclaje cercanos de manera fácil y rápida. Con nuestra app, puedes localizar centros de reciclaje en tiempo real, obtener direcciones precisas.
-        </Text>
-        <Text style={styles.footer}>
-          ¡Haz del reciclaje un hábito cotidiano y contribuye a un futuro más sostenible con RecyPoint!
-        </Text>
-      </View>
+      <Header title="RecyPoint" />
+      <Text style={styles.subtitle}>¡Bienvenido a RecyPoint!</Text>
+      <Text style={styles.text}>
+        Tu aliado para encontrar puntos de reciclaje cercanos de manera fácil y rápida. Con nuestra app, puedes localizar centros de reciclaje en tiempo real, obtener direcciones precisas.
+      </Text>
+      <Text style={styles.highlightText}>
+        ¡Haz del reciclaje un hábito cotidiano y contribuye a un futuro más sostenible con RecyPoint!
+      </Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#E6E9EF'
+    padding: 110,
   },
-  header: {
-    fontSize: 30,
+  subtitle: {
+    fontSize: 33,
     fontWeight: 'bold',
-    color: '#000',
-  },
-  subheader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10,
-    color: '#000',
-  },
-  descriptionContainer: {
-    backgroundColor: '#D3D3D3',
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 20,
-    width: '90%',
-  },
-  description: {
-    fontSize: 14,
-    color: '#333',
     textAlign: 'center',
+    marginBottom: 170,
+    width: 360,
   },
-  footer: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
+  text: {
+    fontSize: 24,
     textAlign: 'center',
+    color: '#666',
+    marginBottom: 150,
+    width: 360,
+    justifyContent: 'center',
+  },
+  highlightText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#333',
     marginTop: 10,
+    width: 360,
   },
 });
+
+export default AboutScreen;

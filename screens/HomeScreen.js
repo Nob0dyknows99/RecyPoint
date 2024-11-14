@@ -1,100 +1,128 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+import Header from '../components/Header';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function HomeScreen() {
-  const markers = [
-    { title: 'Punto limpio 1', latitude: -33.4569, longitude: -70.6483 },
-    { title: 'Punto limpio 2', latitude: -33.457, longitude: -70.6486 },
-  ];
+const HomeScreen = () => {
+  const [location, setLocation] = useState(null);
+  const [mapRegion, setMapRegion] = useState({
+    latitude: -33.4489,
+    longitude: -70.6693,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Permiso para acceder a la ubicación fue denegado');
+        return;
+      }
+
+      let userLocation = await Location.getCurrentPositionAsync({});
+      setLocation(userLocation.coords);
+      setMapRegion({
+        ...mapRegion,
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+      });
+    })();
+  }, []);
+
+  const centerMapOnUserLocation = () => {
+    if (location) {
+      setMapRegion({
+        ...mapRegion,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      });
+    } else {
+      alert("No se pudo obtener la ubicación del usuario");
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>RecyPoint</Text>
-      <Text style={styles.subheader}>¡Bienvenido!</Text>
-      <View style={styles.mapContainer}>
-        <Text style={styles.mapText}>Puntos limpios cercanos</Text>
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: -33.4569,
-            longitude: -70.6483,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          scrollEnabled={false} // Hace que el mapa no se pueda mover, para parecer una imagen
-        >
-          {markers.map((marker, index) => (
-            <Marker
-              key={index}
-              coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-              title={marker.title}
-            />
-          ))}
-        </MapView>
+      <Header />
+      <View style={styles.content}>
+        <Text style={styles.subtitle}>¡Bienvenido!</Text>
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            region={mapRegion}
+            showsUserLocation={true}
+            onRegionChangeComplete={(region) => setMapRegion(region)}
+          >
+            {/* Marcadores de ejemplo */}
+            <Marker coordinate={{ latitude: -33.4489, longitude: -70.6693 }} title="Punto de Reciclaje 1" />
+            <Marker coordinate={{ latitude: -33.4569, longitude: -70.6483 }} title="Punto de Reciclaje 2" />
+          </MapView>
+          <TouchableOpacity style={styles.gpsButton} onPress={centerMapOnUserLocation}>
+            <Ionicons name="locate" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.text}>
+          Reciclar es un pequeño acto con un gran impacto. Al separar nuestros residuos correctamente reducimos la contaminación.
+        </Text>
+        <Text style={styles.highlightText}>Cada material reciclado cuenta para cuidar al planeta!</Text>
       </View>
-      <Text style={styles.description}>
-        Reciclar es un pequeño acto con un gran impacto. Al separar nuestros residuos correctamente, reducimos la contaminación.
-      </Text>
-      <Text style={styles.footer}>
-        Cada material reciclado cuenta para cuidar el planeta!
-      </Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  content: {
+    flex: 1,
+    marginTop: 70, // Margen superior para evitar que el contenido quede debajo del header
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#E6E9EF'
   },
-  header: {
-    fontSize: 30,
+  subtitle: {
+    fontSize: 48,
     fontWeight: 'bold',
-    color: '#000',
-  },
-  subheader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10,
-    color: '#000',
+    marginBottom: 10,
   },
   mapContainer: {
-    backgroundColor: '#D3D3D3',
-    width: '90%',
-    height: 150,
-    borderRadius: 10,
     marginTop: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mapText: {
-    position: 'absolute',
-    top: 10,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
+    width: '100%',
+    height: 450,
+    borderRadius: 15, // Radio para redondear las esquinas del mapa
+    overflow: 'hidden', // Oculta cualquier parte del mapa que sobresalga del borde redondeado
+    marginBottom: 20,
+    position: 'relative',
   },
   map: {
     width: '100%',
     height: '100%',
-    borderRadius: 10,
   },
-  description: {
-    fontSize: 14,
-    color: '#333',
+  gpsButton: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: 'green',
+    borderRadius: 30,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontSize: 16,
     textAlign: 'center',
-    marginTop: 20,
-    paddingHorizontal: 10,
+    color: '#666',
   },
-  footer: {
-    fontSize: 14,
+  highlightText: {
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
     textAlign: 'center',
+    color: '#333',
     marginTop: 10,
-    paddingHorizontal: 10,
-  }
+  },
 });
+
+export default HomeScreen;
