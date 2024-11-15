@@ -4,6 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
+import { getPuntosLimpios } from '../http/index';
 
 const MapScreen = () => {
   const [location, setLocation] = useState(null);
@@ -13,6 +14,7 @@ const MapScreen = () => {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
+  const [puntosLimpios, setPuntosLimpios] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -30,6 +32,12 @@ const MapScreen = () => {
         longitude: userLocation.coords.longitude,
       });
     })();
+
+    (async () => {
+      const puntos = await getPuntosLimpios();
+      console.log('Puntos Limpios obtenidos:', puntos); 
+      setPuntosLimpios(puntos);
+    })();
   }, []);
 
   const centerMapOnUserLocation = () => {
@@ -44,6 +52,10 @@ const MapScreen = () => {
     }
   };
 
+  if (!mapRegion.latitude || !mapRegion.longitude) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <Header />
@@ -54,9 +66,17 @@ const MapScreen = () => {
           showsUserLocation={true}
           onRegionChangeComplete={(region) => setMapRegion(region)}
         >
-          {/* Marcadores de ejemplo */}
-          <Marker coordinate={{ latitude: -33.4489, longitude: -70.6693 }} title="Punto de Reciclaje 1" />
-          <Marker coordinate={{ latitude: -33.4569, longitude: -70.6483 }} title="Punto de Reciclaje 2" />
+          {puntosLimpios.length > 0 ? (
+            puntosLimpios.map((punto) => (
+              <Marker
+                key={punto.id}
+                coordinate={{ latitude: parseFloat(punto.Latitud), longitude: parseFloat(punto.Longitud) }}
+                title={punto.nombre || 'Punto Limpio'}
+              />
+            ))
+          ) : (
+            console.log('No hay puntos para mostrar')
+          )}
         </MapView>
         <TouchableOpacity style={styles.gpsButton} onPress={centerMapOnUserLocation}>
           <Ionicons name="locate" size={24} color="white" />
@@ -73,9 +93,9 @@ const styles = StyleSheet.create({
   mapContainer: {
     marginTop: 95,
     flex: 1,
-    borderRadius: 15, // Radio para redondear las esquinas del mapa
-    overflow: 'hidden', // Oculta cualquier parte del mapa que sobresalga del borde redondeado
-    margin: 20, // Margen alrededor del mapa para dar espacio a los bordes redondeados
+    borderRadius: 15,
+    overflow: 'hidden',
+    margin: 20,
   },
   map: {
     width: '100%',
