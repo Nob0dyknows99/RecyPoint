@@ -20,5 +20,6 @@
 
 _**RecyPoint busca ser un aliado en la búsqueda de un futuro más sostenible, fomentando la práctica del reciclaje a través de una herramienta accesible y práctica.**_
 
-
-<img width="715" alt="Captura de pantalla 2024-11-14 a la(s) 10 53 44 p  m" src="https://github.com/user-attachments/assets/4297c20b-a252-47ba-8494-33344463ad44">
+<p align="center">
+  <img width="715" alt="Diseño RecyPoint Penpot" src="https://github.com/user-attachments/assets/4297c20b-a252-47ba-8494-33344463ad44">
+</p>
