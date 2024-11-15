@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import * as Location from 'expo-location';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
+import MapComponent from '../components/MapComponent';
+import { getPuntosLimpios } from '../http/index';
 
 const HomeScreen = () => {
   const [location, setLocation] = useState(null);
@@ -13,35 +14,51 @@ const HomeScreen = () => {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
+  const [puntosLimpios, setPuntosLimpios] = useState([]);
 
   useEffect(() => {
     (async () => {
+      // Solicitar permisos de ubicación
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         alert('Permiso para acceder a la ubicación fue denegado');
         return;
       }
 
+      // Obtener ubicación del usuario
       let userLocation = await Location.getCurrentPositionAsync({});
       setLocation(userLocation.coords);
-      setMapRegion({
-        ...mapRegion,
+
+      // Actualizar región del mapa
+      setMapRegion((prevRegion) => ({
+        ...prevRegion,
         latitude: userLocation.coords.latitude,
         longitude: userLocation.coords.longitude,
-      });
+      }));
+    })();
+
+    // Obtener puntos limpios desde el backend
+    (async () => {
+      const puntos = await getPuntosLimpios();
+      setPuntosLimpios(puntos);
     })();
   }, []);
 
   const centerMapOnUserLocation = () => {
     if (location) {
-      setMapRegion({
-        ...mapRegion,
+      setMapRegion((prevRegion) => ({
+        ...prevRegion,
         latitude: location.latitude,
         longitude: location.longitude,
-      });
+      }));
     } else {
-      alert("No se pudo obtener la ubicación del usuario");
+      alert('No se pudo obtener la ubicación del usuario');
     }
+  };
+
+  const openGoogleMaps = (latitude, longitude) => {
+    const url = `http://maps.google.com/maps?q=${latitude},${longitude}`;
+    Linking.openURL(url).catch((err) => console.error('Error al abrir URL:', err));
   };
 
   return (
@@ -50,16 +67,12 @@ const HomeScreen = () => {
       <View style={styles.content}>
         <Text style={styles.subtitle}>¡Bienvenido!</Text>
         <View style={styles.mapContainer}>
-          <MapView
-            style={styles.map}
+          <MapComponent
             region={mapRegion}
-            showsUserLocation={true}
-            onRegionChangeComplete={(region) => setMapRegion(region)}
-          >
-            {/* Marcadores de ejemplo */}
-            <Marker coordinate={{ latitude: -33.4489, longitude: -70.6693 }} title="Punto de Reciclaje 1" />
-            <Marker coordinate={{ latitude: -33.4569, longitude: -70.6483 }} title="Punto de Reciclaje 2" />
-          </MapView>
+            puntosLimpios={puntosLimpios}
+            onRegionChange={setMapRegion}
+            openGoogleMaps={openGoogleMaps}
+          />
           <TouchableOpacity style={styles.gpsButton} onPress={centerMapOnUserLocation}>
             <Ionicons name="locate" size={24} color="white" />
           </TouchableOpacity>
@@ -67,7 +80,7 @@ const HomeScreen = () => {
         <Text style={styles.text}>
           Reciclar es un pequeño acto con un gran impacto. Al separar nuestros residuos correctamente reducimos la contaminación.
         </Text>
-        <Text style={styles.highlightText}>Cada material reciclado cuenta para cuidar al planeta!</Text>
+        <Text style={styles.highlightText}>¡Cada material reciclado cuenta para cuidar al planeta!</Text>
       </View>
     </View>
   );
@@ -79,7 +92,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    marginTop: 70, // Margen superior para evitar que el contenido quede debajo del header
+    marginTop: 70,
     alignItems: 'center',
     padding: 20,
   },
@@ -92,14 +105,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '100%',
     height: 450,
-    borderRadius: 15, // Radio para redondear las esquinas del mapa
-    overflow: 'hidden', // Oculta cualquier parte del mapa que sobresalga del borde redondeado
+    borderRadius: 15,
+    overflow: 'hidden',
     marginBottom: 20,
     position: 'relative',
-  },
-  map: {
-    width: '100%',
-    height: '100%',
   },
   gpsButton: {
     position: 'absolute',
