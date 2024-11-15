@@ -11,11 +11,11 @@
 
 **Objetivos de RecyPoint**
 
->- Facilitar el acceso a puntos de reciclaje: Proveer a los usuarios una herramienta intuitiva y eficiente para localizar los puntos limpios más cercanos a su ubicación.
+>-Facilitar el acceso a puntos de reciclaje: Proveer a los usuarios una herramienta intuitiva y eficiente para localizar los puntos limpios más cercanos a su ubicación.
 
->- Promover la sostenibilidad: Fomentar la práctica del reciclaje entre los usuarios, contribuyendo a la reducción de residuos y al cuidado del medio ambiente.
+>-Promover la sostenibilidad: Fomentar la práctica del reciclaje entre los usuarios, contribuyendo a la reducción de residuos y al cuidado del medio ambiente.
 
->- Fomentar la educación ambiental: Informar y educar a los usuarios sobre la importancia del reciclaje y cómo pueden contribuir a un futuro más sostenible.
+>-Fomentar la educación ambiental: Informar y educar a los usuarios sobre la importancia del reciclaje y cómo pueden contribuir a un futuro más sostenible.
 
 
 _**RecyPoint busca ser un aliado en la búsqueda de un futuro más sostenible, fomentando la práctica del reciclaje a través de una herramienta accesible y práctica.**_
