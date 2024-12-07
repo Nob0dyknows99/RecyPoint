@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Linking, View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
 
 const MapComponent = ({ region, puntosLimpios, onRegionChange, openGoogleMaps }) => {
@@ -17,10 +17,22 @@ const MapComponent = ({ region, puntosLimpios, onRegionChange, openGoogleMaps })
             coordinate={{ latitude: parseFloat(punto.Latitud), longitude: parseFloat(punto.Longitud) }}
             title={punto.nombre || 'Punto Limpio'}
           >
-            <Callout onPress={() => openGoogleMaps(punto.Latitud, punto.Longitud)}>
+            <Callout onPress={() => {
+              if (punto.Estado !== 'En mantenimiento') {
+                openGoogleMaps(punto.Latitud, punto.Longitud);
+              }
+            }}>
               <View style={styles.popup}>
                 <Text style={styles.popupTitle}>{punto.nombre}</Text>
-                <Text style={styles.popupButtonText}>Ir</Text>
+                <Text>{punto.Estado}</Text>
+                <Text
+                  style={[
+                    styles.popupButtonText,
+                    punto.Estado === 'En mantenimiento' && styles.popupButtonTextDisabled,
+                  ]}
+                >
+                  Ir
+                </Text>
               </View>
             </Callout>
           </Marker>
@@ -45,9 +57,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   popupButtonText: {
-    color: '#2196F3',
+    color: '#2196F3', 
     fontWeight: 'bold',
     marginTop: 5,
+  },
+  popupButtonTextDisabled: {
+    color: '#B0BEC5', 
   },
 });
 
